@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Skyline Weather Radar</title>
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="manifest" href="/static/manifest.json" />
+    <link rel="icon" href="/static/icons/icon-192.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script src="/static/js/app.js" defer></script>
+  </head>
+  <body class="theme-clear-day">
+    <div class="radar"></div>
+    <div class="grain"></div>
+
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Skyline Weather Radar</p>
+          <h1 id="location">Search a city</h1>
+          <p id="subline">Live conditions, air, and forecast.</p>
+        </div>
+        <div class="controls">
+          <form id="search-form" class="search">
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search city or place"
+              autocomplete="off"
+            />
+            <button type="submit">Find</button>
+          </form>
+          <div class="actions">
+            <button id="geo-btn" class="ghost">Use my location</button>
+            <button id="unit-btn" class="ghost" aria-pressed="false">
+              Units: C / km
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-left">
+          <div id="hero-icon" class="hero-icon"></div>
+          <div>
+            <p id="condition" class="condition">--</p>
+            <p class="time" id="local-time">--</p>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="temp">
+            <span id="temp">--</span>
+            <span id="temp-unit">C</span>
+          </div>
+          <p id="feels">Feels like --</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Highlights</h2>
+          <div class="metrics">
+            <div class="metric">
+              <span class="label">Humidity</span>
+              <span id="humidity" class="value">--</span>
+            </div>
+            <div class="metric">
+              <span class="label">Wind</span>
+              <span id="wind" class="value">--</span>
+            </div>
+            <div class="metric">
+              <span class="label">UV Index</span>
+              <span id="uv" class="value">--</span>
+            </div>
+            <div class="metric">
+              <span class="label">Air Quality</span>
+              <span id="air" class="value">--</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Sun & Sky</h2>
+          <div class="sun-row">
+            <div>
+              <span class="label">Sunrise</span>
+              <span id="sunrise" class="value">--</span>
+            </div>
+            <div>
+              <span class="label">Sunset</span>
+              <span id="sunset" class="value">--</span>
+            </div>
+          </div>
+          <div class="air-grid">
+            <div class="air-item">
+              <span class="label">PM2.5</span>
+              <span id="pm25" class="value">--</span>
+            </div>
+            <div class="air-item">
+              <span class="label">PM10</span>
+              <span id="pm10" class="value">--</span>
+            </div>
+            <div class="air-item">
+              <span class="label">O3</span>
+              <span id="ozone" class="value">--</span>
+            </div>
+            <div class="air-item">
+              <span class="label">NO2</span>
+              <span id="no2" class="value">--</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-header">
+          <h2>Next 12 hours</h2>
+          <span id="hourly-note" class="note">--</span>
+        </div>
+        <div id="hourly" class="hourly"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-header">
+          <h2>7-day outlook</h2>
+          <span id="daily-note" class="note">--</span>
+        </div>
+        <div id="daily" class="daily"></div>
+      </section>
+
+      <footer>
+        <p id="status" class="status">Ready.</p>
+        <p class="status">Installable PWA ready for offline use.</p>
+      </footer>
+    </main>
+  </body>
+</html>
