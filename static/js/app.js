@@ -31,6 +31,7 @@ const elements = {
   geoBtn: document.getElementById("geo-btn"),
   searchForm: document.getElementById("search-form"),
   searchInput: document.getElementById("search-input"),
+  suggestions: document.getElementById("suggestions"),
 };
 
 const weatherGroups = [
@@ -157,6 +158,44 @@ const setStatus = (message) => {
   elements.status.textContent = message;
 };
 
+const clearSuggestions = () => {
+  elements.suggestions.innerHTML = "";
+  elements.suggestions.classList.remove("visible");
+};
+
+const renderSuggestions = (items) => {
+  elements.suggestions.innerHTML = "";
+
+  if (!items.length) {
+    const empty = document.createElement("div");
+    empty.className = "suggestion-empty";
+    empty.textContent = "No matching locations.";
+    elements.suggestions.appendChild(empty);
+    elements.suggestions.classList.add("visible");
+    return;
+  }
+
+  items.forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "suggestion-item";
+    button.innerHTML = `
+      <span>${item.name}, ${item.country_code}</span>
+      <small>${item.admin1 || ""}</small>
+    `;
+    button.addEventListener("click", () => {
+      const label = `${item.name}, ${item.country_code}`;
+      elements.searchInput.value = label;
+      clearSuggestions();
+      state.location = { lat: item.latitude, lon: item.longitude, label };
+      fetchWeather(item.latitude, item.longitude, label);
+    });
+    elements.suggestions.appendChild(button);
+  });
+
+  elements.suggestions.classList.add("visible");
+};
+
 const setTheme = (code, isDay) => {
   const theme = getTheme(code, isDay === 1);
   document.body.className = theme;
@@ -232,6 +271,9 @@ const fetchWeather = async (lat, lon, label) => {
     const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}&units=${state.units}`);
     if (!response.ok) throw new Error("Weather fetch failed.");
     const payload = await response.json();
+    if (!payload.current || payload.current.temperature == null) {
+      throw new Error("Weather data missing.");
+    }
     updateUI(payload, label);
     setStatus("Live data updated.");
   } catch (error) {
@@ -240,7 +282,10 @@ const fetchWeather = async (lat, lon, label) => {
 };
 
 const searchLocation = async (query) => {
-  if (!query) return;
+  if (!query) {
+    setStatus("Enter a location.");
+    return;
+  }
   setStatus("Searching coordinates...");
   const response = await fetch(`/api/geocode?name=${encodeURIComponent(query)}`);
   if (!response.ok) {
@@ -250,12 +295,35 @@ const searchLocation = async (query) => {
   const data = await response.json();
   if (!data.results || data.results.length === 0) {
     setStatus("No matches found.");
+    elements.location.textContent = "Location not found";
+    elements.subline.textContent = "Try a different city or place.";
     return;
   }
   const top = data.results[0];
   const label = `${top.name}, ${top.country_code}`;
   state.location = { lat: top.latitude, lon: top.longitude, label };
   fetchWeather(top.latitude, top.longitude, label);
+};
+
+let suggestTimer;
+const suggestLocations = async (query) => {
+  if (!query || query.length < 2) {
+    clearSuggestions();
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/geocode?name=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+      clearSuggestions();
+      return;
+    }
+    const data = await response.json();
+    const results = data.results || [];
+    renderSuggestions(results.slice(0, 5));
+  } catch (error) {
+    clearSuggestions();
+  }
 };
 
 const setUnits = () => {
@@ -299,7 +367,20 @@ const registerServiceWorker = () => {
 const init = () => {
   elements.searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    clearSuggestions();
     searchLocation(elements.searchInput.value.trim());
+  });
+
+  elements.searchInput.addEventListener("input", (event) => {
+    const value = event.target.value.trim();
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(() => suggestLocations(value), 250);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!elements.searchForm.contains(event.target)) {
+      clearSuggestions();
+    }
   });
 
   elements.unitBtn.addEventListener("click", setUnits);
