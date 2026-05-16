@@ -10,6 +10,12 @@ https://finaleprojectdeproglang-production.up.railway.app/
 
 ---
 
+## 🎥 Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/IGsHmv3Nmi8/maxresdefault.jpg)](https://youtu.be/IGsHmv3Nmi8)
+
+---
+
 # 📌 Project Overview
 
 This project was developed as a Final Project for Cloud Computing. The application demonstrates cloud deployment concepts, scalability, performance optimization, monitoring readiness, and secure web application architecture.
